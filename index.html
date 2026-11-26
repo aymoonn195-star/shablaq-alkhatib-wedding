@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عقد قران | أيمن & سارة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold-primary: #d4af37;
+            --gold-light: #f3e5ab;
+            --gold-dark: #996515;
+            --emerald-dark: #0f2922;
+            --emerald-medium: #1a4338;
+            --cream-bg: #fdfbf7;
+            --text-dark: #2c241b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: radial-gradient(circle at center, var(--emerald-medium) 0%, var(--emerald-dark) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* شاشة المغلف */
+        #envelope-screen {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1b3d33 0%, #0a1f19 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #envelope-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: linear-gradient(145deg, #f9f3e3, #e8dcc0);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 0 2px var(--gold-primary);
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.04);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 115px;
+            background: linear-gradient(180deg, #efe4c8 0%, #dfd0ad 100%);
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transform-origin: top;
+            transition: transform 0.6s ease;
+            z-index: 2;
+        }
+
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .wax-seal {
+            position: relative;
+            z-index: 3;
+            width: 74px;
+            height: 74px;
+            background: radial-gradient(circle at 30% 30%, #f5d76e, var(--gold-primary) 60%, var(--gold-dark));
+            border-radius: 50%;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 8px rgba(255,255,255,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #fff3c4;
+            animation: pulseSeal 2s infinite;
+        }
+
+        @keyframes pulseSeal {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.07); }
+        }
+
+        .wax-seal svg {
+            width: 38px;
+            height: 38px;
+            fill: #5c3a04;
+        }
+
+        .envelope-text {
+            margin-top: 28px;
+            color: var(--gold-light);
+        }
+
+        .envelope-text h2 {
+            font-family: 'Amiri', serif;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            color: var(--gold-primary);
+        }
+
+        .envelope-text p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        /* البطاقة الرئيسية */
+        .card-container {
+            width: 100%;
+            max-width: 520px;
+            margin: 30px 15px;
+            background-color: var(--cream-bg);
+            background-image: radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 0);
+            background-size: 20px 20px;
+            border-radius: 20px;
+            border: 2px solid var(--gold-primary);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55), 0 0 0 8px rgba(253, 251, 247, 0.08);
+            padding: 35px 25px;
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
+        }
+
+        .card-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .corner-ornament {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border: 2px solid var(--gold-primary);
+            pointer-events: none;
+        }
+        .top-right { top: 12px; right: 12px; border-left: none; border-bottom: none; border-top-right-radius: 10px; }
+        .top-left { top: 12px; left: 12px; border-right: none; border-bottom: none; border-top-left-radius: 10px; }
+        .bottom-right { bottom: 12px; right: 12px; border-left: none; border-top: none; border-bottom-right-radius: 10px; }
+        .bottom-left { bottom: 12px; left: 12px; border-right: none; border-top: none; border-bottom-left-radius: 10px; }
+
+        .crown-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 10px;
+            fill: var(--gold-primary);
+        }
+
+        .bismillah {
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            color: var(--gold-dark);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .quran-verse {
+            font-family: 'Amiri', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #4a3f35;
+            background: rgba(212, 175, 55, 0.09);
+            padding: 12px 15px;
+            border-radius: 12px;
+            border-right: 3px solid var(--gold-primary);
+            border-left: 3px solid var(--gold-primary);
+            margin-bottom: 22px;
+        }
+
+        .invite-intro {
+            font-family: 'Amiri', serif;
+            font-size: 1.2rem;
+            color: var(--emerald-dark);
+            margin-bottom: 8px;
+        }
+
+        .families {
+            font-family: 'Amiri', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .invite-sub {
+            font-size: 1.05rem;
+            color: #55493e;
+            margin-bottom: 20px;
+        }
+
+        /* أسماء العروسين */
+        .couple-box {
+            cursor: pointer;
+            padding: 15px 10px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.03));
+            border: 1px dashed var(--gold-primary);
+            margin-bottom: 18px;
+            transition: transform 0.2s ease;
+            user-select: none;
+        }
+
+        .couple-box:active {
+            transform: scale(0.97);
+        }
+
+        .couple-names {
+            font-family: 'Aref Ruqaa', serif;
+            font-size: 2.3rem;
+            color: var(--gold-dark);
+            line-height: 1.5;
+            text-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+        }
+
+        .heart-divider {
+            display: inline-block;
+            color: #c0392b;
+            font-size: 1.6rem;
+            margin: 0 10px;
+            animation: heartbeat 1.4s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.15); }
+        }
+
+        .tap-hint {
+            font-size: 0.8rem;
+            color: var(--gold-dark);
+            margin-top: 6px;
+            opacity: 0.85;
+        }
+
+        /* التاريخ والوقت */
+        .date-time-box {
+            margin: 20px 0;
+            padding: 15px;
+            border-top: 1px solid rgba(212, 175, 55, 0.4);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .event-date {
+            font-family: 'Amiri', serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--emerald-dark);
+            margin-bottom: 6px;
+        }
+
+        .event-time {
+            font-size: 1.05rem;
+            color: #4a3f35;
+        }
+
+        /* العداد التنازلي */
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .time-unit {
+            background: var(--emerald-dark);
+            color: var(--gold-light);
+            padding: 12px 6px;
+            border-radius: 12px;
+            border: 1px solid var(--gold-primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .time-unit span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .time-unit small {
+            font-size: 0.8rem;
+            color: var(--gold-primary);
+        }
+
+        .blessing {
+            font-family: 'Amiri', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold-dark);
+            margin: 18px 0;
+        }
+
+        /* الموقع والأزرار */
+        .location-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .location-box h4 {
+            color: var(--emerald-dark);
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+        }
+
+        .location-box p {
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 18px;
+            border-radius: 12px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--emerald-dark);
+            border: 1.5px solid var(--emerald-dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--emerald-dark);
+            color: var(--gold-light);
+        }
+
+        /* زر التحكم بالصوت */
+        .audio-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--gold-primary);
+            color: var(--emerald-dark);
+            border: 2px solid #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+
+        /* القلوب المتطايرة */
+        .floating-heart {
+            position: fixed;
+            font-size: 1.4rem;
+            pointer-events: none;
+            animation: floatUp 2.5s ease-out forwards;
+            z-index: 2000;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-160px) scale(1.4); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة المغلف التفاعلي -->
+    <div id="envelope-screen">
+        <div class="envelope-wrapper" id="envelope" onclick="openInvitation()">
+            <div class="envelope-flap"></div>
+            <div class="wax-seal">
+                <svg viewBox="0 0 24 24">
+                    <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="envelope-text">
+            <h2>✉️ لديكَ دعوة عقد قران خاصة</h2>
+            <p>اضغط على الختم الذهبي لفتح المغلف 🕊️</p>
+        </div>
+    </div>
+
+    <!-- زر الصوت -->
+    <button class="audio-toggle" id="audioBtn" onclick="toggleAudio()" title="تشغيل / إيقاف الصوت">🔊</button>
+
+    <!-- بطاقة الدعوة -->
+    <main class="card-container" id="invitation-card">
+        <div class="corner-ornament top-right"></div>
+        <div class="corner-ornament top-left"></div>
+        <div class="corner-ornament bottom-right"></div>
+        <div class="corner-ornament bottom-left"></div>
+
+        <svg class="crown-icon" viewBox="0 0 24 24">
+            <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z"/>
+        </svg>
+
+        <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+
+        <div class="quran-verse">
+            ﴿ وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ ﴾
+        </div>
+
+        <div class="invite-intro">يَتَشَرَّفُ</div>
+        <div class="families">
+            عائلة العريس أيمن<br>
+            و عائلة العروس سارة
+        </div>
+        <div class="invite-sub">بِدَعْوَتِكُمْ لِحُضُورِ حَفْلِ عَقْدِ قِرَانِ نَجْلَيْهِمَا</div>
+
+        <div class="couple-box" onclick="burstHearts(event)">
+            <div class="couple-names">
+                أيمن <span class="heart-divider">♥</span> سارة
+            </div>
+            <div class="tap-hint">✨ انقر على الاسمين لنبضات الفرحة ✨</div>
+        </div>
+
+        <div class="date-time-box">
+            <div class="event-date">يَوْمَ الجُمُعَةِ 25 / 12 / 2026</div>
+            <div class="event-time">السَّاعَة ٤:٠٠ عَصْراً — بَعْدَ صَلَاةِ العَصْرِ مُبَاشَرَةً</div>
+        </div>
+
+        <!-- العداد التنازلي -->
+        <div class="countdown">
+            <div class="time-unit"><span id="days">00</span><small>يَوْم</small></div>
+            <div class="time-unit"><span id="hours">00</span><small>سَاعَة</small></div>
+            <div class="time-unit"><span id="minutes">00</span><small>دَقِيقَة</small></div>
+            <div class="time-unit"><span id="seconds">00</span><small>ثَانِيَة</small></div>
+        </div>
+
+        <div class="blessing">بَارَكَ اللَّهُ لَهُمَا وَبَارَكَ عَلَيْهِمَا وَجَمَعَ بَيْنَهُمَا فِي خَيْر</div>
+
+        <div class="location-box">
+            <h4>📍 الموقع والعنوان</h4>
+            <p>قاعة البستان الملكية — الشارع العام (موقع تجريبي)</p>
+        </div>
+
+        <div class="actions">
+            <a href="https://maps.google.com" target="_blank" class="btn btn-gold">
+                🗺️ موقع الحفل على الخريطة
+            </a>
+            <button onclick="addToCalendar()" class="btn btn-outline">
+                📅 أضف الموعد لتقويم هاتفك
+            </button>
+            <button onclick="shareInvitation()" class="btn btn-outline">
+                📤 مشاركة بطاقة الدعوة
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // إعدادات التوقيت التجريبي (25 ديسمبر 2026 الساعة 4:00 عصراً)
+        const eventDate = new Date("2026-12-25T16:00:00").getTime();
+        let audioCtx = null;
+        let isPlaying = false;
+        let melodyInterval = null;
+
+        // فتح المغلف
+        function openInvitation() {
+            const envelope = document.getElementById('envelope');
+            const screen = document.getElementById('envelope-screen');
+            const card = document.getElementById('invitation-card');
+            const audioBtn = document.getElementById('audioBtn');
+
+            envelope.classList.add('open');
+            startCelebrationSound();
+
+            setTimeout(() => {
+                screen.classList.add('hidden');
+                card.classList.add('visible');
+                audioBtn.style.display = 'flex';
+                launchConfettiHearts();
+            }, 650);
+        }
+
+        // نغمة احتفالية مدمجة تعمل بدون الحاجة لملف خارجي
+        function startCelebrationSound() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                isPlaying = true;
+                const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25];
+                let step = 0;
+
+                function playNote() {
+                    if (!isPlaying || !audioCtx) return;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.6);
+                    step++;
+                }
+
+                playNote();
+                melodyInterval = setInterval(playNote, 650);
+            } catch (e) {
+                console.log("Audio not supported");
+            }
+        }
+
+        function toggleAudio() {
+            const btn = document.getElementById('audioBtn');
+            if (isPlaying) {
+                isPlaying = false;
+                clearInterval(melodyInterval);
+                btn.textContent = '🔇';
+            } else {
+                startCelebrationSound();
+                btn.textContent = '🔊';
+            }
+        }
+
+        // العداد التنازلي
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = eventDate - now;
+
+            if (distance <= 0) {
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = String(days).padStart(2, '0');
+            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // تطاير القلوب عند النقر على الأسماء
+        function burstHearts(e) {
+            const emojis = ['❤️', '💛', '✨', '🕊️', '💍'];
+            for (let i = 0; i < 8; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                heart.style.left = (e.clientX + (Math.random() * 80 - 40)) + 'px';
+                heart.style.top = (e.clientY + (Math.random() * 40 - 20)) + 'px';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 2500);
+            }
+        }
+
+        function launchConfettiHearts() {
+            const emojis = ['❤️', '✨', '🕊️'];
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.top = (window.innerHeight - 50) + 'px';
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 2500);
+                }, i * 120);
+            }
+        }
+
+        // إضافة للتقويم
+        function addToCalendar() {
+            const title = encodeURIComponent("عقد قران أيمن وسارة");
+            const details = encodeURIComponent("نتشرف بحضوركم حفل عقد قران أيمن وسارة. بارك الله لهما وبارك عليهما.");
+            const location = encodeURIComponent("قاعة البستان الملكية");
+            const start = "20261225T140000Z";
+            const end = "20261225T170000Z";
+            const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
+            window.open(url, '_blank');
+        }
+
+        // مشاركة الدعوة
+        function shareInvitation() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'دعوة عقد قران | أيمن & سارة',
+                    text: 'نتشرف بدعوتكم لحضور حفل عقد قران أيمن وسارة ❤️',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("تم نسخ رابط الدعوة لمشاركته!");
+            }
+        }
+    </script>
+</body>
+</html>
